@@ -1,6 +1,6 @@
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -18,10 +18,11 @@ import javax.swing.border.Border;
 public class GameFrame {
 
     private String openingLine = "Welcome to 'Ghostly and Ghastly Coasters'!\nWe hope you enjoy the rides at our fine establishment!";
+    protected String outputBuffer = "";
 
     private ImageIcon imageIcon;
 
-    private Timer timer = new Timer(0, this::checkTime);
+    private Timer timer = new Timer(50, this::checkTime);
     private JFrame frame;
     private Border softBevelBorderOf4 = BorderFactory.createSoftBevelBorder(4);
 
@@ -45,9 +46,9 @@ public class GameFrame {
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if (txtField.getText().equals("")) {
-                    txtArea.setText("Sorry, that name isn't valid.\nPlease try again!");
                 } else {
                     timer.start();
+                    outputBuffer += openingLine;
                 }
             }
         }
@@ -77,7 +78,13 @@ public class GameFrame {
         panel.setLayout(null);
         frame.setContentPane(panel);
         panel.setBackground(new Color(0x424949));
-        panel.setSize(350, height);
+
+        inventoryPanel = new JPanel(new GridLayout());
+        inventoryPanel.setSize(200, height-39);
+        inventoryPanel.setLocation(335, 0);
+        inventoryPanel.setBackground(new Color(0,0,0, 60));
+        inventoryPanel.setBorder(BorderFactory.createLineBorder(new Color(0,0,0), 5));
+        panel.add(inventoryPanel);
 
         option1 = new JButton();
         option1.setSize(150, 25);
@@ -150,15 +157,20 @@ public class GameFrame {
         frame.setVisible(true);
     }
 
-    private String getString(String string) {
-        return string;
+    private void checkTime(ActionEvent evt) {
+        if (outputBuffer.equals("")) {
+            return;
+        }
+        int tickInMilliseconds = timer.getDelay();
+        if (tickInMilliseconds >= 20) {
+            txtArea.append(outputBuffer.substring(0, 1));
+            outputBuffer = outputBuffer.substring(1);
+            timer.restart();
+        }
     }
 
-    private void checkTime(ActionEvent evt) {
-        int length = getString(openingLine).length();
-        for (int x = 0; x < length - 1; x++) {
-            txtArea.append(openingLine);
-        }
+    private void setString(String str) {
+
     }
 
     private void buttonHandler(ActionEvent event) {
